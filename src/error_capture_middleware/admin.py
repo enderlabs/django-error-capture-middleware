@@ -44,6 +44,7 @@ class ErrorAdmin(admin.ModelAdmin):
     """
     Admin binding for Error to include Notes.
     """
+    list_display = ('id', 'traceback', 'resolved', 'timestamp')
     inlines = [NoteInline]
 
 
