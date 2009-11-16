@@ -1,1 +1,44 @@
-TODO :-)
+
+Requirements
+============
+
+ * Django 1.1.0 (may work on older versions)
+ * Python 2.4+
+
+
+Special Instructions
+--------------------
+Some handlers need more non-standard libraries.
+
+GitHub
+``````
+Extra Required Libraries:
+
+ * PyYAML
+
+
+Handlers
+========
+
+GitHub
+------
+Posts tracebacks to the GitHub issues system.
+
+*Package*: error_capture_middleware.handlers.github.GitHubHandler
+
+Settings
+````````
+ * ERROR_CAPTURE_GITHUB_REPO: repository in user/codebase format
+ * ERROR_CAPTURE_GITHUB_TOKEN: Your API token
+ * ERROR_CAPTURE_GITHUB_LOGIN: Your user login
+
+
+SimpleTicket
+============
+Really simple ticket system for tracebacks. Mainly created as a demo.
+
+*Package*: error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler
+
+Settings
+````````
+No special settings required.
