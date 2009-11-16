@@ -37,7 +37,7 @@ class Error(models.Model):
     """
     An error.
     """
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, blank=True)
     resolved = models.BooleanField(default=False)
     traceback = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
