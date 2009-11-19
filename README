@@ -17,6 +17,13 @@ Extra Required Libraries:
  * PyYAML
 
 
+Required Settings
+=================
+
+ERROR_CAPTURE_ENABLE_MULTPROCESS: Turns on multiprocessing. This will speed up
+the time between and error and when the user sees it, but can return faster
+than the bug system can return.
+
 Handlers
 ========
 
