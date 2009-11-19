@@ -20,9 +20,12 @@ Extra Required Libraries:
 Required Settings
 =================
 
-ERROR_CAPTURE_ENABLE_MULTPROCESS: Turns on multiprocessing. This will speed up
-the time between and error and when the user sees it, but can return faster
-than the bug system can return.
+ * ERROR_CAPTURE_HANDLERS: Tuple listing all handler packages to execute. The last
+   package is expected to return information back to the user!
+ * ERROR_CAPTURE_ENABLE_MULTPROCESS: Turns on multiprocessing. This will speed up
+   the time between and error and when the user sees it, but can return faster
+   than the bug system can return.
+
 
 Handlers
 ========

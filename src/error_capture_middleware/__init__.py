@@ -32,10 +32,21 @@
 Error caprture middleware and default application.
 """
 
+import platform
 import sys
 
 from django.conf import settings
 from django import http
+
+# Imports based on version
+if platform.python_version() >= '2.6.0':
+    threading = __import__('multiprocessing')
+    thread_cls = threading.Process
+    queue_mod = __import__('multiprocessing.queues', fromlist=[True])
+else:
+    threading = __import__('threading')
+    thread_cls = threading.Thread
+    queue_mod = __import__('queue')
 
 
 class ErrorCaptureMiddleware(object):
@@ -60,7 +71,15 @@ class ErrorCaptureMiddleware(object):
             cls = handler.split('.')[-1]
             handler_obj = getattr(__import__(module, fromlist=[True]), cls)
             count += 1
-            result = handler_obj()(request, exception, sys.exc_info())
+            func = handler_obj()
+            if (settings.ERROR_CAPTURE_ENABLE_MULTPROCESS
+                and count < handler_count):
+                a_process = thread_cls(
+                    target=func, args=(request, exception, sys.exc_info()))
+                #a_process.daemon = True
+                a_process.start()
+            else:
+                result = func(request, exception, sys.exc_info())
             # If it is the last item, then it will be what we return.
             if count >= handler_count:
                 return result
@@ -71,22 +90,7 @@ class ErrorCaptureHandler(object):
     Parent class for creating a handler.
     """
 
-    def __init__(self):
-        """
-        Creates an instance and sets up internal imports based on platform
-        version.
-        """
-        import platform
-        self.traceback = __import__('traceback')
-
-        if platform.python_version() >= '2.6.0':
-            self.threading = __import__('multiprocessing')
-            self.thread_cls = self.threading.Process
-            self.queue = __import__('multiprocessing.queues', fromlist=[True])
-        else:
-            self.threading = __import__('threading')
-            self.thread_cls = self.threading.Thread
-            self.queue = __import__('queue')
+    traceback = __import__('traceback')
 
     def handle(self, request, exception, tb):
         """
@@ -111,10 +115,10 @@ class ErrorCaptureHandler(object):
            - `args`: non-keyword arguments to pass to callback
            - `kwargs`: keyword arguments to pass to callback
         """
-        a_queue = self.queue.Queue()
+        a_queue = queue_mod.Queue()
         kwargs.update({'queue': a_queue})
         if settings.ERROR_CAPTURE_ENABLE_MULTPROCESS:
-            a_process = self.thread_cls(target=callback, args=args, kwargs=kwargs)
+            a_process = thread_cls(target=callback, args=args, kwargs=kwargs)
             a_process.daemon = True
             a_process.start()
         else:
