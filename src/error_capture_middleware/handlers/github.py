@@ -88,8 +88,12 @@ class GitHubHandler(ErrorCaptureHandler):
             'title': title_tpl.render(context),
             'body': body_tpl.render(context),
         }
-        result = urllib.urlopen(url, urllib.urlencode(params)).read()
-        # Remove !timestamp, it isn't valid
-        id = yaml.load(result.replace('!timestamp', ''))['issue']['number']
+        def get_data(queue):
+            result = urllib.urlopen(url, urllib.urlencode(params)).read()
+            # Remove !timestamp, it isn't valid
+            id = yaml.load(result.replace('!timestamp', ''))['issue']['number']
+            queue.put_nowait(id)
+        queue, process = self.background_call(get_data)
+        id = queue.get()
         return render_to_response('error_capture_middleware/error.html',
             {'bug_url': issue_url + str(id), 'id': id})
