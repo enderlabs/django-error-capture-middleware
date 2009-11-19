@@ -50,13 +50,12 @@ from error_capture_middleware.models import Error
 
 class GitHubHandler(ErrorCaptureHandler):
     """
-    Default handler of errors.
+    GitHub handler.
     """
 
     def handle(self, request, exception, tb):
         """
-        Must be defined in a subclass. Takes care of processing the
-        exception.
+        Pushes the traceback to a github ticket system.
 
         :Parameters:
            - `request`: request causing the exception
@@ -88,6 +87,7 @@ class GitHubHandler(ErrorCaptureHandler):
             'title': title_tpl.render(context),
             'body': body_tpl.render(context),
         }
+        # Worker function
         def get_data(queue):
             result = urllib.urlopen(url, urllib.urlencode(params)).read()
             # Remove !timestamp, it isn't valid

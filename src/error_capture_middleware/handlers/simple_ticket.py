@@ -47,8 +47,7 @@ class SimpleTicketHandler(ErrorCaptureHandler):
 
     def handle(self, request, exception, tb):
         """
-        Must be defined in a subclass. Takes care of processing the
-        exception.
+        Pushes the traceback into a simple ticket system.
 
         :Parameters:
            - `request`: request causing the exception
