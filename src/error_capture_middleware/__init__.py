@@ -142,6 +142,10 @@ class ErrorCaptureHandler(object):
         data.update(request.META)
         self.context = Context(data)
         self.handle(request, exception, tb)
-        #TODO return 500.html here with our context
+
+        if settings.DEBUG:
+            from django.views import debug
+            return debug.technical_500_response(request, *exc_info)
+            
         return HttpResponseServerError(
             loader.get_template('500.html').render(self.context))
