@@ -38,6 +38,7 @@ import sys
 from django import http
 from django.conf import settings
 from django.http import HttpResponseServerError
+from django.views import debug
 from django.template import Context, loader
 
 # Imports based on version
@@ -66,6 +67,11 @@ class ErrorCaptureMiddleware(object):
         """
         if isinstance(exception, http.Http404):
             raise exception
+
+        if settings.DEBUG and settings.ERROR_CAPTURE_NOOP_ON_DEBUG:
+            exc_info = sys.exc_info()
+            return debug.technical_500_response(request, *exc_info)
+
         handler_count = len(settings.ERROR_CAPTURE_HANDLERS)
         count = 0
         for handler in settings.ERROR_CAPTURE_HANDLERS:
@@ -144,7 +150,6 @@ class ErrorCaptureHandler(object):
         self.handle(request, exception, tb)
 
         if settings.DEBUG:
-            from django.views import debug
             return debug.technical_500_response(request, *exc_info)
             
         return HttpResponseServerError(
