@@ -25,6 +25,8 @@ Required Settings
  * ERROR_CAPTURE_ENABLE_MULTPROCESS: Turns on multiprocessing. This will speed up
    the time between and error and when the user sees it, but can return faster
    than the bug system can return.
+ * ERROR_CAPTURE_NOOP_ON_DEBUG: Boolean defining whether to iterate through the
+   handlers when DEBUG=True
 
 
 Handlers
