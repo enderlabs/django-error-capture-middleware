@@ -59,10 +59,9 @@ class EmailHandler(ErrorCaptureHandler):
         try:
             admins = settings.ADMINS
             fail_silently = settings.ERROR_CAPTURE_EMAIL_FAIL_SILENTLY
-            server_email = settings.SERVER_EMAIL
         except:
             raise ImproperlyConfigured(
-                'You must define SERVER_EMAIL, ADMINS and '
+                'You must define ADMINS and '
                 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY in your settings.')
         # Worker function
         def get_data(context, queue):

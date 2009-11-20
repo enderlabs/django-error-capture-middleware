@@ -38,9 +38,9 @@ Sends an email to the admins on traceback.
 
 Settings
 ````````
- * SERVER_EMAIL: address the email comes from
  * ADMINS: who the email goes to. This should be a tuple of tuples containing name, address.
  * ERROR_CAPTURE_EMAIL_FAIL_SILENTLY: False to throw exception if the email doesn't get sent.
+ * SERVER_EMAIL: address the email comes from (optional)
 
 
 GitHub
