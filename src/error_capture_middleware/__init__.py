@@ -35,8 +35,10 @@ Error caprture middleware and default application.
 import platform
 import sys
 
-from django.conf import settings
 from django import http
+from django.conf import settings
+from django.http import HttpResponseServerError
+from django.template import Context, loader
 
 # Imports based on version
 if platform.python_version() >= '2.6.0':
@@ -135,5 +137,11 @@ class ErrorCaptureHandler(object):
            - `exception`: actual exception raised
            - `exc_info`: info from sys.exc_info
         """
-        return self.handle(
-            request, exception, self.traceback.format_exception(*exc_info))
+        tb = self.traceback.format_exception(*exc_info)
+        data = {'traceback': tb}
+        data.update(request.META)
+        self.context = Context(data)
+        self.handle(request, exception, tb)
+        #TODO return 500.html here with our context
+        return HttpResponseServerError(
+            loader.get_template('500.html').render(self.context))

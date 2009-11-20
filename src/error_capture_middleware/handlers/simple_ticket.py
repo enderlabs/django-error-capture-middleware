@@ -59,5 +59,4 @@ class SimpleTicketHandler(ErrorCaptureHandler):
             user = request.user
         error = Error(user=user, traceback="\n".join(tb))
         error.save()
-        return render_to_response('error_capture_middleware/error.html',
-            {'id': error.id})
+        self.context['id'] = error.id

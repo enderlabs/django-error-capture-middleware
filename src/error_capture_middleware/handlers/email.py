@@ -59,25 +59,17 @@ class EmailHandler(ErrorCaptureHandler):
         try:
             admins = settings.ADMINS
             fail_silently = settings.ERROR_CAPTURE_EMAIL_FAIL_SILENTLY
-            server_email = settings.SERVER_EMAIL
         except:
             raise ImproperlyConfigured(
-                'You must define SERVER_EMAIL, ADMINS and '
+                'You must define ADMINS and '
                 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY in your settings.')
-        data = {'traceback': tb}
-        data.update(request.META)
-        context = Context(data)
         # Worker function
-        def get_data(queue):
+        def get_data(context, queue):
             subject_tpl = loader.get_template(
                 'error_capture_middleware/email/subject.txt')
             body_tpl = loader.get_template(
                 'error_capture_middleware/email/body.txt')
-            # The render function appends a \n character at the end. Subjects
-            # can't have newlines.
-            subject = subject_tpl.render(context).replace('\n','')
-            body = body_tpl.render(context)
-
-            mail_admins(subject, body, fail_silently=fail_silently)
-        queue, process = self.background_call(get_data)
-        return render_to_response('error_capture_middleware/error.html', {})
+            mail_admins(subject_tpl.render(context), body_tpl.render(context),
+                fail_silently=fail_silently)
+        queue, process = self.background_call(get_data,
+            kwargs={'context':self.context})
