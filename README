@@ -48,6 +48,11 @@ Templates
 characters
  * body.txt - Template for the body of the email.
 
+Templates
+````````
+ * subject.txt - Template for the subject. This file should not contain new line characters
+ * body.txt - Template for the body of the email.
+
 
 GitHub
 ------
@@ -62,7 +67,7 @@ Settings
  * ERROR_CAPTURE_GITHUB_LOGIN: Your user login
 
 Templates
-````````
+`````````
  * title.txt - Template for the title of the ticket.
  * body.txt - Template for the body of the ticket. You can use Github Flavored Markdown.
 
