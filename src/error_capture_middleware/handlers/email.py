@@ -64,17 +64,13 @@ class EmailHandler(ErrorCaptureHandler):
             raise ImproperlyConfigured(
                 'You must define SERVER_EMAIL, ADMINS and '
                 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY in your settings.')
-        # Make the data nice for github
-        data = {'traceback': tb}
-        data.update(request.META)
-        context = Context(data)
         # Worker function
-        def get_data(queue):
+        def get_data(context, queue):
             subject_tpl = loader.get_template(
                 'error_capture_middleware/email/subject.txt')
             body_tpl = loader.get_template(
                 'error_capture_middleware/email/body.txt')
             mail_admins(subject_tpl.render(context), body_tpl.render(context),
                 fail_silently=fail_silently)
-        queue, process = self.background_call(get_data)
-        return render_to_response('error_capture_middleware/error.html', {})
+        queue, process = self.background_call(get_data,
+            kwargs={'context':self.context})

@@ -74,9 +74,6 @@ class GitHubHandler(ErrorCaptureHandler):
         url = "http://github.com/api/v2/yaml/issues/open/" + repo
         issue_url =' http://github.com/'+repo+'/issues#issue/'
         # Make the data nice for github
-        data = {'traceback': tb}
-        data.update(request.META)
-        context = Context(data)
         title_tpl = loader.get_template(
             'error_capture_middleware/github/title.txt')
         body_tpl = loader.get_template(
@@ -84,8 +81,8 @@ class GitHubHandler(ErrorCaptureHandler):
         params = {
             'login': login,
             'token': token,
-            'title': title_tpl.render(context),
-            'body': body_tpl.render(context),
+            'title': title_tpl.render(self.context),
+            'body': body_tpl.render(self.context),
         }
         # Worker function
         def get_data(queue):
@@ -95,5 +92,5 @@ class GitHubHandler(ErrorCaptureHandler):
             queue.put_nowait(id)
         queue, process = self.background_call(get_data)
         id = queue.get()
-        return render_to_response('error_capture_middleware/error.html',
-            {'bug_url': issue_url + str(id), 'id': id})
+        self.context['bug_url'] = issue_url + str(id)
+        self.context['id'] = id
