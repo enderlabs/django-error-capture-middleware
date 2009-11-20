@@ -69,7 +69,11 @@ class EmailHandler(ErrorCaptureHandler):
                 'error_capture_middleware/email/subject.txt')
             body_tpl = loader.get_template(
                 'error_capture_middleware/email/body.txt')
-            mail_admins(subject_tpl.render(context), body_tpl.render(context),
-                fail_silently=fail_silently)
+            # The render function appends a \n character at the end. Subjects
+            # can't have newlines.
+            subject = subject_tpl.render(context).replace('\n','')
+            body = body_tpl.render(context)
+
+            mail_admins(subject, body, fail_silently=fail_silently)
         queue, process = self.background_call(get_data,
             kwargs={'context':self.context})
