@@ -42,6 +42,12 @@ Settings
  * ERROR_CAPTURE_EMAIL_FAIL_SILENTLY: False to throw exception if the email doesn't get sent.
  * SERVER_EMAIL: address the email comes from (optional)
 
+Templates
+````````
+ * subject.txt - Template for the subject. This file should not contain new line
+characters
+ * body.txt - Template for the body of the email.
+
 
 GitHub
 ------
@@ -54,6 +60,11 @@ Settings
  * ERROR_CAPTURE_GITHUB_REPO: repository in user/codebase format
  * ERROR_CAPTURE_GITHUB_TOKEN: Your API token
  * ERROR_CAPTURE_GITHUB_LOGIN: Your user login
+
+Templates
+````````
+ * title.txt - Template for the title of the ticket.
+ * body.txt - Template for the body of the ticket. You can use Github Flavored Markdown.
 
 
 SimpleTicket
