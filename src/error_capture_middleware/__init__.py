@@ -135,7 +135,7 @@ class ErrorCaptureHandler(object):
 
     def __call__(self, request, exception, exc_info):
         """
-        Actually gets called from the middleware and takes care of 
+        Actually gets called from the middleware and takes care of
         adding in the traceback information.
 
         :Parameters:
@@ -151,6 +151,6 @@ class ErrorCaptureHandler(object):
 
         if settings.DEBUG:
             return debug.technical_500_response(request, *exc_info)
-            
+
         return HttpResponseServerError(
             loader.get_template('500.html').render(self.context))

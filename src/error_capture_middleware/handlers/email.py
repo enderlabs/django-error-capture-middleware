@@ -64,6 +64,7 @@ class EmailHandler(ErrorCaptureHandler):
                 'You must define ADMINS and '
                 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY in your settings.')
         # Worker function
+
         def get_data(context, queue):
             subject_tpl = loader.get_template(
                 'error_capture_middleware/email/subject.txt')
@@ -71,9 +72,9 @@ class EmailHandler(ErrorCaptureHandler):
                 'error_capture_middleware/email/body.txt')
             # The render function appends a \n character at the end. Subjects
             # can't have newlines.
-            subject = subject_tpl.render(context).replace('\n','')
+            subject = subject_tpl.render(context).replace('\n', '')
             body = body_tpl.render(context)
 
             mail_admins(subject, body, fail_silently=fail_silently)
         queue, process = self.background_call(get_data,
-            kwargs={'context':self.context})
+            kwargs={'context': self.context})

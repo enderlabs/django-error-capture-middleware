@@ -48,6 +48,7 @@ from error_capture_middleware.models import Error
 # TODO maybe we can add some nice methods to help take care of some what
 # will be used in other backends ... need to find out what they will be
 
+
 class GitHubHandler(ErrorCaptureHandler):
     """
     GitHub handler.
@@ -72,7 +73,7 @@ class GitHubHandler(ErrorCaptureHandler):
                 'ERROR_CAPTURE_GITHUB_TOKEN, ERROR_CAPTURE_GITHUB_REPO '
                 'in your settings.')
         url = "http://github.com/api/v2/yaml/issues/open/" + repo
-        issue_url =' http://github.com/'+repo+'/issues#issue/'
+        issue_url = 'http://github.com/' + repo + '/issues#issue/'
         # Make the data nice for github
         title_tpl = loader.get_template(
             'error_capture_middleware/github/title.txt')
@@ -85,6 +86,7 @@ class GitHubHandler(ErrorCaptureHandler):
             'body': body_tpl.render(self.context),
         }
         # Worker function
+
         def get_data(queue):
             result = urllib.urlopen(url, urllib.urlencode(params)).read()
             # Remove !timestamp, it isn't valid
