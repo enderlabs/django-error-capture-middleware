@@ -36,13 +36,9 @@ import yaml
 import urllib
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import render_to_response
-from django.template import Context, loader
+from django.template import loader
 
 from error_capture_middleware import ErrorCaptureHandler
-from error_capture_middleware.models import Error
 
 
 # TODO maybe we can add some nice methods to help take care of some what
@@ -54,6 +50,9 @@ class GitHubHandler(ErrorCaptureHandler):
     GitHub handler.
     """
 
+    required_settings = ['ERROR_CAPTURE_GITHUB_REPO',
+        'ERROR_CAPTURE_GITHUB_TOKEN', 'ERROR_CAPTURE_GITHUB_LOGIN']
+
     def handle(self, request, exception, tb):
         """
         Pushes the traceback to a github ticket system.
@@ -63,25 +62,18 @@ class GitHubHandler(ErrorCaptureHandler):
            - `exception`: actual exception raised
            - `tb`: traceback string
         """
-        try:
-            repo = settings.ERROR_CAPTURE_GITHUB_REPO
-            token = settings.ERROR_CAPTURE_GITHUB_TOKEN
-            login = settings.ERROR_CAPTURE_GITHUB_LOGIN
-        except:
-            raise ImproperlyConfigured(
-                'You must define ERROR_CAPTURE_GITHUB_LOGIN, '
-                'ERROR_CAPTURE_GITHUB_TOKEN, ERROR_CAPTURE_GITHUB_REPO '
-                'in your settings.')
-        url = "http://github.com/api/v2/yaml/issues/open/" + repo
-        issue_url = 'http://github.com/' + repo + '/issues#issue/'
+        url = ("http://github.com/api/v2/yaml/issues/open/" +
+            settings.ERROR_CAPTURE_GITHUB_REPO)
+        issue_url = ('http://github.com/' +
+            settings.ERROR_CAPTURE_GITHUB_REPO + '/issues#issue/')
         # Make the data nice for github
         title_tpl = loader.get_template(
             'error_capture_middleware/github/title.txt')
         body_tpl = loader.get_template(
             'error_capture_middleware/github/body.txt')
         params = {
-            'login': login,
-            'token': token,
+            'login': settings.ERROR_CAPTURE_GITHUB_LOGIN,
+            'token': settings.ERROR_CAPTURE_GITHUB_TOKEN,
             'title': title_tpl.render(self.context),
             'body': body_tpl.render(self.context),
         }

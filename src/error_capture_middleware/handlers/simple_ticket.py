@@ -33,8 +33,6 @@ Super simple ticket handler that uses the admin interface.
 """
 
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.shortcuts import render_to_response
 
 from error_capture_middleware import ErrorCaptureHandler
 from error_capture_middleware.models import Error

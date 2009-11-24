@@ -33,19 +33,18 @@ Super simple ticket handler that uses the admin interface.
 """
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import mail_admins
-from django.shortcuts import render_to_response
-from django.template import Context, loader
+from django.template import loader
 
 from error_capture_middleware import ErrorCaptureHandler
-from error_capture_middleware.models import Error
 
 
 class EmailHandler(ErrorCaptureHandler):
     """
     Replacement email handler.
     """
+
+    required_settings = ['ADMINS', 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY']
 
     def handle(self, request, exception, tb):
         """
@@ -56,15 +55,6 @@ class EmailHandler(ErrorCaptureHandler):
            - `exception`: actual exception raised
            - `tb`: traceback string
         """
-        try:
-            admins = settings.ADMINS
-            fail_silently = settings.ERROR_CAPTURE_EMAIL_FAIL_SILENTLY
-        except:
-            raise ImproperlyConfigured(
-                'You must define ADMINS and '
-                'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY in your settings.')
-        # Worker function
-
         def get_data(context, queue):
             subject_tpl = loader.get_template(
                 'error_capture_middleware/email/subject.txt')
@@ -75,6 +65,7 @@ class EmailHandler(ErrorCaptureHandler):
             subject = subject_tpl.render(context).replace('\n', '')
             body = body_tpl.render(context)
 
-            mail_admins(subject, body, fail_silently=fail_silently)
+            mail_admins(subject, body,
+                fail_silently=settings.ERROR_CAPTURE_EMAIL_FAIL_SILENTLY)
         queue, process = self.background_call(get_data,
             kwargs={'context': self.context})

@@ -37,6 +37,7 @@ import sys
 
 from django import http
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseServerError
 from django.views import debug
 from django.template import Context, loader
@@ -99,6 +100,17 @@ class ErrorCaptureHandler(object):
     """
 
     traceback = __import__('traceback')
+    required_settings = []
+
+    def __init__(self):
+        """
+        Creates an instance of this class.
+        """
+        for required_setting in self.required_settings:
+            if not hasattr(settings, required_setting):
+                raise ImproperlyConfigured('You must define the following ' +
+                    'in your settings' +
+                    ', '.join(self.required_settings)[:-2])
 
     def handle(self, request, exception, tb):
         """
