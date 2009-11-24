@@ -32,11 +32,17 @@
 Error caprture middleware and default application.
 """
 
+try:
+    from hashlib import sha1
+except ImportError, e:
+    import sha as sha1
+
 import platform
 import sys
 
 from django import http
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseServerError
 from django.views import debug
@@ -57,6 +63,7 @@ class ErrorCaptureMiddleware(object):
     """
     Middleware to capture exceptins and create a ticket/bug for it.
     """
+    traceback = __import__('traceback')
 
     def process_exception(self, request, exception):
         """
@@ -69,9 +76,21 @@ class ErrorCaptureMiddleware(object):
         if isinstance(exception, http.Http404):
             raise exception
 
+        exc_info = sys.exc_info()
         if settings.DEBUG and settings.ERROR_CAPTURE_NOOP_ON_DEBUG:
-            exc_info = sys.exc_info()
             return debug.technical_500_response(request, *exc_info)
+
+        # generate a hash for this exception
+        hash = sha1()
+        hash.update(self.traceback.format_exc())
+        exc_hash = hash.hexdigest()
+
+        # check the cache to see if we have already handled it
+        if cache.get(exc_hash) is not None:
+            return
+
+        cache.set(exc_hash, self.traceback.format_exc(),
+                int(settings.ERROR_CAPTURE_IGNORE_DUPE_SEC))
 
         handler_count = len(settings.ERROR_CAPTURE_HANDLERS)
         count = 0
@@ -84,7 +103,7 @@ class ErrorCaptureMiddleware(object):
             if (settings.ERROR_CAPTURE_ENABLE_MULTPROCESS
                 and count < handler_count):
                 a_process = thread_cls(
-                    target=func, args=(request, exception, sys.exc_info()))
+                    target=func, args=(request, exception, exc_info))
                 #a_process.daemon = True
                 a_process.start()
             else:

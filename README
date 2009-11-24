@@ -67,6 +67,8 @@ Settings
  * ERROR_CAPTURE_GITHUB_REPO: repository in user/codebase format
  * ERROR_CAPTURE_GITHUB_TOKEN: Your API token
  * ERROR_CAPTURE_GITHUB_LOGIN: Your user login
+ * ERROR_CAPTURE_IGNORE_DUPE_SEC: The number of seconds to ignore duplicate
+   exceptions.
 
 Templates
 `````````
