@@ -38,6 +38,7 @@ except ImportError, e:
     import sha as sha1
 
 import platform
+import socket
 import sys
 
 from django import http
@@ -177,6 +178,7 @@ class ErrorCaptureHandler(object):
         tb = self.traceback.format_exception(*exc_info)
         data = {'traceback': tb}
         data.update(request.META)
+        data["LOCAL_HOSTNAME"] = socket.gethostname()
         self.context = Context(data)
         self.handle(request, exception, tb)
 
