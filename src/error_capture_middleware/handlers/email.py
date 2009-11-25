@@ -66,6 +66,11 @@ class EmailHandler(ErrorCaptureHandler):
             body = body_tpl.render(context)
 
             try:
+                subject = settings.EMAIL_SUBJECT_PREFIX + subject
+            except:
+                pass
+
+            try:
                 from_email = settings.SERVER_EMAIL
             except AttributeError, e:
                 from_email = None
