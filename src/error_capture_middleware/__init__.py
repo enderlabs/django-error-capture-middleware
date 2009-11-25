@@ -180,7 +180,7 @@ class ErrorCaptureHandler(object):
         data.update(request.META)
         data["GET"] = request.GET
         data["POST"] = request.POST
-        data["LOCAL_HOSTNAME"] = socket.gethostname()
+        data["SERVER_HOSTNAME"] = socket.gethostname()
         self.context = Context(data)
         self.handle(request, exception, tb)
 
