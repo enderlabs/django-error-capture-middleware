@@ -55,6 +55,7 @@ class EmailHandler(ErrorCaptureHandler):
            - `exception`: actual exception raised
            - `tb`: traceback string
         """
+
         def get_data(context, queue):
             subject_tpl = loader.get_template(
                 'error_capture_middleware/email/subject.txt')

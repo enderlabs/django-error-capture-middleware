@@ -1,4 +1,9 @@
 syntax: glob
 
 *.pyc
+*.pyo
+*$py.class
 *.swp
+*.db
+*.patch
+*.egg-info
