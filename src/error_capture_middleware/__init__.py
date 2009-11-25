@@ -178,6 +178,8 @@ class ErrorCaptureHandler(object):
         tb = self.traceback.format_exception(*exc_info)
         data = {'traceback': tb}
         data.update(request.META)
+        data["GET"] = request.GET
+        data["POST"] = request.POST
         data["LOCAL_HOSTNAME"] = socket.gethostname()
         self.context = Context(data)
         self.handle(request, exception, tb)
