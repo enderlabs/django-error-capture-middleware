@@ -33,7 +33,7 @@ Super simple ticket handler that uses the admin interface.
 """
 
 from django.conf import settings
-from django.core.mail import mail_admins
+from django.core.mail import send_mail
 from django.template import loader
 
 from error_capture_middleware import ErrorCaptureHandler
@@ -44,7 +44,8 @@ class EmailHandler(ErrorCaptureHandler):
     Replacement email handler.
     """
 
-    required_settings = ['ADMINS', 'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY']
+    required_settings = ['ERROR_CAPTURE_ADMINS',
+        'ERROR_CAPTURE_EMAIL_FAIL_SILENTLY']
 
     def handle(self, request, exception, tb):
         """
@@ -66,7 +67,20 @@ class EmailHandler(ErrorCaptureHandler):
             subject = subject_tpl.render(context).replace('\n', '')
             body = body_tpl.render(context)
 
-            mail_admins(subject, body,
+            try:
+                subject = settings.EMAIL_SUBJECT_PREFIX + subject
+            except:
+                pass
+
+            try:
+                from_email = settings.SERVER_EMAIL
+            except AttributeError, e:
+                from_email = None
+
+            datatuple = (subject, body, from_email,
+                    settings.ERROR_CAPTURE_ADMINS)
+
+            send_mail(subject, body, from_email, settings.ERROR_CAPTURE_ADMINS,
                 fail_silently=settings.ERROR_CAPTURE_EMAIL_FAIL_SILENTLY)
         queue, process = self.background_call(get_data,
             kwargs={'context': self.context})
