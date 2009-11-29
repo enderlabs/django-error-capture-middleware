@@ -131,6 +131,8 @@ class ErrorCaptureHandler(object):
                 raise ImproperlyConfigured('You must define the following ' +
                     'in your settings' +
                     ', '.join(self.required_settings)[:-2])
+        # Create an empty context for use later.
+        self.context = Context()
 
     def handle(self, request, exception, tb):
         """
@@ -181,7 +183,7 @@ class ErrorCaptureHandler(object):
         data["GET"] = request.GET
         data["POST"] = request.POST
         data["SERVER_HOSTNAME"] = socket.gethostname()
-        self.context = Context(data)
+        self.context.update(data)
         self.handle(request, exception, tb)
 
         if settings.DEBUG:

@@ -80,10 +80,14 @@ class GitHubHandler(ErrorCaptureHandler):
         # Worker function
 
         def get_data(queue):
-            result = urllib.urlopen(url, urllib.urlencode(params)).read()
-            # Remove !timestamp, it isn't valid
-            id = yaml.load(result.replace('!timestamp', ''))['issue']['number']
-            queue.put_nowait(id)
+            try:
+                result = urllib.urlopen(url, urllib.urlencode(params)).read()
+                # Remove !timestamp, it isn't valid YAML
+                id = yaml.load(
+                    result.replace('!timestamp', ''))['issue']['number']
+                queue.put_nowait(id)
+            except Exception, ex:
+                queue.put_nowait(ex)
         queue, process = self.background_call(get_data)
         id = queue.get()
         self.context['bug_url'] = issue_url + str(id)

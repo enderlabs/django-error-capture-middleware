@@ -32,6 +32,228 @@
 Unittests.
 """
 
-from django.test import TestCase
+import sys
+import traceback
 
-# TODO: add test cases
+from django.conf import settings
+from django.test import TestCase, client
+from django.test.client import Client
+
+from error_capture_middleware import (ErrorCaptureMiddleware,
+    ErrorCaptureHandler, threading, thread_cls, queue_mod)
+
+from error_capture_middleware.handlers import email, github, simple_ticket
+
+
+class Jelly(object):
+    """
+    Simple moldable class.
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Creates an instance of jelly.
+
+        :Parameters:
+           - `kwargs`: keyward arguments to turn into variables.
+        """
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+
+class TestCasePlus(TestCase):
+    """
+    TestCase with functionality that helps aid in our testing. All tests
+    should subclass this directly or indirectly.
+    """
+
+    client = Client()
+
+    def _raise_and_get_exception(self, data="test", exception=Exception):
+        """
+        Raises, captures and returns an exception and it's traceback.
+
+        :Parameters:
+           - `data`: text to be in the exception message. Defaults to 'test'.
+           - `exception`: exception class to raise. Defaults to Exception.
+        """
+        try:
+            raise exception(data)
+        except Exception, ex:
+            tb = traceback.format_exception(*sys.exc_info())
+            return ex, tb
+
+
+class ErrorCaptureMiddlewareTestCase(TestCasePlus):
+    """
+    Tests for the middleware.
+    """
+
+    def setUp(self):
+        """
+        How to start up each test.
+        """
+        self.instance = ErrorCaptureMiddleware()
+
+    def tearDown(self):
+        """
+        How to end each test.
+        """
+        del self.instance
+
+    def test_structure(self):
+        """
+        Verifies the object is created in the way expected.
+        """
+        self.assertEquals(self.instance.traceback, traceback)
+        self.assertTrue(hasattr(self.instance, 'process_exception'))
+
+
+class _ParentTicketHandlerMixIn(object):
+    """
+    Parent class for all handlers.
+    """
+
+    test_cls = None
+    dummy_request = Jelly(user=None, META={}, GET={}, POST={})
+
+    def setUp(self):
+        """
+        How to start up each test.
+        """
+        self.instance = self.test_cls()
+
+    def tearDown(self):
+        """
+        How to end each test.
+        """
+        del self.instance
+
+    def test_structure(self):
+        """
+        Verifies the object is created in the way expected.
+        """
+        self.assertEquals(self.instance.traceback, traceback)
+        self.assertTrue(hasattr(self.instance, 'handle'))
+        self.assertTrue(hasattr(self.instance, 'background_call'))
+        self.assertTrue(hasattr(self.instance, '__call__'))
+
+    def test_handle(self):
+        """
+        Verify the handle method works as it should.
+        """
+        ex, tb = self._raise_and_get_exception()
+        result = self.instance.handle(self.dummy_request, ex, tb)
+        # We should not get a return from the handler.
+        self.assertEquals(result, None)
+
+    def test__call__(self):
+        """
+        Tests the __call__ functionality.
+        """
+        ex = self._raise_and_get_exception()
+        original_debug = settings.DEBUG
+        result = self.instance(self.dummy_request, ex, sys.exc_info())
+        self.assertEquals(result.status_code, 500)
+
+    def test_simple_background_call(self):
+        """
+        Tests the ability to do simple background calls.
+        """
+
+        def simple(queue):
+            queue.put_nowait('simple')
+
+        queue, prc = self.instance.background_call(simple)
+        self.assertTrue(isinstance(queue, queue_mod.Queue))
+        self.assertTrue(isinstance(prc, thread_cls))
+        self.assertEquals(queue.get(), 'simple')
+
+    def test_background_call(self):
+        """
+        Tests the ability to do a background calls.
+        """
+
+        def less_simple(data, to, queue, append="append"):
+            queue.put_nowait(" ".join([data, to, append]))
+
+        queue, prc = self.instance.background_call(
+            less_simple, ('data', ), {'to': 'to'})
+        self.assertTrue(isinstance(queue, queue_mod.Queue))
+        self.assertTrue(isinstance(prc, thread_cls))
+        self.assertEquals(queue.get(), "data to append")
+
+
+class ErrorCaptureHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for the handler parent class.
+    """
+
+    test_cls = ErrorCaptureHandler
+
+    def test_handle(self):
+        """
+        Verify the handle method works as it should.
+        """
+        ex, tb = self._raise_and_get_exception()
+        self.assertRaises(
+            NotImplementedError, self.instance.handle,
+            self.dummy_request, ex, tb)
+
+    def test__call__(self):
+        """
+        Tests the __call__ functionality.
+        """
+        ex, tb = self._raise_and_get_exception()
+        original_debug = settings.DEBUG
+        self.assertRaises(
+            NotImplementedError, self.instance.__call__,
+            self.dummy_request, ex, sys.exc_info())
+        settings.DEBUG = False
+
+
+class SimpleTicketHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for Simple Ticket handler.
+    """
+
+    test_cls = simple_ticket.SimpleTicketHandler
+
+
+class EmailHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for Email handler.
+    """
+
+    test_cls = email.EmailHandler
+
+    def setUp(self):
+        """
+        Adds required temporary setting for the test. We are testing
+        with fail silent since we are testing the handler and not
+        the ability of the system to send email.
+        """
+        settings.ERROR_CAPTURE_ADMINS = tuple('user@localhost')
+        settings.ERROR_CAPTURE_EMAIL_FAIL_SILENT = True
+        super(EmailHandlerTestCase, self).setUp()
+
+
+class GitHubHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for GitHub handler.
+
+    TODO: flesh this test out more.
+    """
+
+    test_cls = github.GitHubHandler
+
+    def setUp(self):
+        """
+        Adds required temporary setting for the test. We are testing
+        with fail silent since we are testing the handler and not
+        the ability of the system to send email.
+        """
+        settings.ERROR_CAPTURE_GITHUB_REPO = ''
+        settings.ERROR_CAPTURE_GITHUB_TOKEN = ''
+        settings.ERROR_CAPTURE_GITHUB_LOGIN = ''
+        super(GitHubHandlerTestCase, self).setUp()
