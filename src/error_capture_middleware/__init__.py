@@ -38,6 +38,7 @@ except ImportError, e:
     import sha as sha1
 
 import platform
+import Queue
 import socket
 import sys
 
@@ -58,6 +59,21 @@ else:
     threading = __import__('threading')
     thread_cls = threading.Thread
     queue_mod = __import__('queue')
+
+
+def exception_wrapper(func):
+    """
+    Wraps a method so that raised exception are returned
+    instead of raising.
+    """
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception, ex:
+            kwargs['queue'].put_nowait(ex)
+
+    return wrapper
 
 
 class ErrorCaptureMiddleware(object):
@@ -158,14 +174,32 @@ class ErrorCaptureHandler(object):
            - `kwargs`: keyword arguments to pass to callback
         """
         a_queue = queue_mod.Queue()
+        callback_wrapped = exception_wrapper(callback)
         kwargs.update({'queue': a_queue})
         if settings.ERROR_CAPTURE_ENABLE_MULTPROCESS:
-            a_process = thread_cls(target=callback, args=args, kwargs=kwargs)
+            a_process = thread_cls(
+                target=callback_wrapped, args=args, kwargs=kwargs)
             a_process.daemon = True
             a_process.start()
         else:
-            a_process = callback(*args, **kwargs)
+            a_process = callback_wrapped(*args, **kwargs)
         return a_queue, a_process
+
+    def get_data(self, queue):
+        """
+        Gets the data from a queue or raises the proper exception if
+        one exists.
+
+        :Parameters:
+           - `queue`: queue instance to use
+        """
+        try:
+            data = queue.get_nowait()
+        except Queue.Empty:
+            return None
+        if issubclass(Exception, data.__class__):
+            raise data
+        return data
 
     def __call__(self, request, exception, exc_info):
         """

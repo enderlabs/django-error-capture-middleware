@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -68,7 +68,7 @@ TEMPLATE_DIRS = (
     './templates/',
 )
 
-ERROR_CAPTURE_ENABLE_MULTPROCESS = True
+ERROR_CAPTURE_ENABLE_MULTPROCESS = False
 ERROR_CAPTURE_HANDLERS = (
 #    'error_capture_middleware.handlers.github.GitHubHandler',
 #    'error_capture_middleware.handlers.email.EmailHandler',

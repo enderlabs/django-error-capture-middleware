@@ -32,6 +32,7 @@
 Unittests.
 """
 
+import time
 import sys
 import traceback
 
@@ -40,7 +41,7 @@ from django.test import TestCase, client
 from django.test.client import Client
 
 from error_capture_middleware import (ErrorCaptureMiddleware,
-    ErrorCaptureHandler, threading, thread_cls, queue_mod)
+    ErrorCaptureHandler, threading, thread_cls, Queue, queue_mod)
 
 from error_capture_middleware.handlers import email, github, simple_ticket
 
@@ -166,7 +167,8 @@ class _ParentTicketHandlerMixIn(object):
 
         queue, prc = self.instance.background_call(simple)
         self.assertTrue(isinstance(queue, queue_mod.Queue))
-        self.assertTrue(isinstance(prc, thread_cls))
+        if settings.ERROR_CAPTURE_ENABLE_MULTPROCESS:
+            self.assertTrue(isinstance(prc, thread_cls))
         self.assertEquals(queue.get(), 'simple')
 
     def test_background_call(self):
@@ -180,8 +182,25 @@ class _ParentTicketHandlerMixIn(object):
         queue, prc = self.instance.background_call(
             less_simple, ('data', ), {'to': 'to'})
         self.assertTrue(isinstance(queue, queue_mod.Queue))
-        self.assertTrue(isinstance(prc, thread_cls))
+        if settings.ERROR_CAPTURE_ENABLE_MULTPROCESS:
+            self.assertTrue(isinstance(prc, thread_cls))
         self.assertEquals(queue.get(), "data to append")
+
+        queue, prc = self.instance.background_call(
+            less_simple, ('data', ), {'to': 'to'})
+
+        # We wait a bit to make sure we get the data in the test
+        time.sleep(0.05)
+        result = self.instance.get_data(queue)
+        self.assertEquals(result, "data to append")
+
+        def raise_ex(queue):
+            raise Exception('test')
+
+        queue, process = self.instance.background_call(raise_ex)
+        # Again, we wait a bit to make sure we get the data in the test
+        time.sleep(0.05)
+        self.assertRaises(Exception, self.instance.get_data, queue)
 
 
 class ErrorCaptureHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
