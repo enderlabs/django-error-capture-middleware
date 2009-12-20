@@ -68,16 +68,22 @@ TEMPLATE_DIRS = (
     './templates/',
 )
 
-ERROR_CAPTURE_ENABLE_MULTPROCESS = False
+ERROR_CAPTURE_ENABLE_MULTPROCESS = True
 ERROR_CAPTURE_HANDLERS = (
 #    'error_capture_middleware.handlers.github.GitHubHandler',
 #    'error_capture_middleware.handlers.email.EmailHandler',
     'error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler',
+#    'error_capture_middleware.handlers.google_code.GoogleCodeHandler',
 )
 
 ERROR_CAPTURE_GITHUB_REPO = ''
 ERROR_CAPTURE_GITHUB_TOKEN = ''
 ERROR_CAPTURE_GITHUB_LOGIN = ''
+
+ERROR_CAPTURE_GOOGLE_CODE_PROJECT = ''
+ERROR_CAPTURE_GOOGLE_CODE_LOGIN = ''
+ERROR_CAPTURE_GOOGLE_CODE_PASSWORD = ''
+ERROR_CAPTURE_GOOGLE_CODE_TYPE = ''
 
 ERROR_CAPTURE_NOOP_ON_DEBUG = False
 

@@ -135,6 +135,8 @@ class ErrorCaptureHandler(object):
     Parent class for creating a handler.
     """
 
+    __slots__ = ['traceback', 'required_settings', 'context']
+
     traceback = __import__('traceback')
     required_settings = []
 

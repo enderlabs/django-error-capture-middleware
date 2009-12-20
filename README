@@ -18,6 +18,12 @@ SimpleTicket
  * Pygments (Optional)
 
 
+Google Code
+-----------
+
+ * gdata (http://code.google.com/p/gdata-python-client/downloads/list)
+
+
 Required Settings
 =================
 
@@ -78,6 +84,25 @@ Templates
 `````````
  * title.txt - Template for the title of the ticket.
  * body.txt - Template for the body of the ticket. You can use Github Flavored Markdown.
+
+
+Google Code
+-----------
+Posts tracebacks to the Google Code issues systems.
+
+*Package*: error_capture_middleware.handlers.google_code.GoogleCodeHandler
+
+Settings
+````````
+ * ERROR_CAPTURE_GOOGLE_CODE_PROJECT: project to post to
+ * ERROR_CAPTURE_GOOGLE_CODE_LOGIN: Your account username
+ * ERROR_CAPTURE_GOOGLE_CODE_PASSWORD: Your account password
+ * ERROR_CAPTURE_GOOGLE_CODE_TYPE: Type of issue you want to flag as
+
+Templates
+`````````
+ * title.txt - Template for the title of the ticket.
+ * body.txt - Template for the body of the ticket.
 
 
 SimpleTicket

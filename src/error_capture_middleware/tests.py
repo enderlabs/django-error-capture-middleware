@@ -43,7 +43,8 @@ from django.test.client import Client
 from error_capture_middleware import (ErrorCaptureMiddleware,
     ErrorCaptureHandler, threading, thread_cls, Queue, queue_mod)
 
-from error_capture_middleware.handlers import email, github, simple_ticket
+from error_capture_middleware.handlers import (
+    email, github, simple_ticket, google_code)
 
 
 class Jelly(object):
@@ -268,11 +269,29 @@ class GitHubHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
 
     def setUp(self):
         """
-        Adds required temporary setting for the test. We are testing
-        with fail silent since we are testing the handler and not
-        the ability of the system to send email.
+        Adds required temporary setting for the test.
         """
         settings.ERROR_CAPTURE_GITHUB_REPO = ''
         settings.ERROR_CAPTURE_GITHUB_TOKEN = ''
         settings.ERROR_CAPTURE_GITHUB_LOGIN = ''
         super(GitHubHandlerTestCase, self).setUp()
+
+
+class GoogleCodeHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for Google Code handler.
+
+    TODO: flesh this test out more.
+    """
+
+    test_cls = google_code.GoogleCodeHandler
+
+    def setUp(self):
+        """
+        Adds required temporary setting for the test.
+        """
+        settings.ERROR_CAPTURE_GOOGLE_CODE_PROJECT = ''
+        settings.ERROR_CAPTURE_GOOGLE_CODE_LOGIN = ''
+        settings.ERROR_CAPTURE_GOOGLE_CODE_PASSWORD = ''
+        settings.ERROR_CAPTURE_GOOGLE_CODE_TYPE = ''
+        super(GoogleCodeHandlerTestCase, self).setUp()
