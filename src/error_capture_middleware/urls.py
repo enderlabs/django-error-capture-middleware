@@ -28,29 +28,23 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+url mappings.
+"""
 
-from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.conf.urls.defaults import *
+
+urlpatterns = patterns('')
 
 
-class Error(models.Model):
-    """
-    An error.
-    """
-    user = models.ForeignKey(User, null=True, blank=True)
-    resolved = models.BooleanField(default=False)
-    owner = models.ForeignKey(
-        User, null=True, blank=True, related_name='owner')
-    traceback = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        """
-        Unicode representation of this object.
-        """
-        return "Error " + str(self.id)
-
-    class Meta(object):
-        permissions = (
-            ("view_error", "Can view errors"),
-        )
+# Only turn on the simpleticket urls if it's in the handlers
+if 'SimpleTicketHandler' in [x.rpartition(
+    '.')[-1] for x in settings.ERROR_CAPTURE_HANDLERS]:
+    urlpatterns += patterns('error_capture_middleware.views',
+        (r'(?P<name>\w+)/list/$', 'user_list'),
+        (r'list/$', 'list'),
+        (r'ticket/(?P<id>\d+)/take/$', 'take_ticket'),
+        (r'ticket/(?P<id>\d+)/resolve/$', 'resolve_ticket'),
+        (r'ticket/(?P<id>\d+)/$', 'ticket'),
+    )

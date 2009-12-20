@@ -30,14 +30,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from django.contrib import admin
-from error_capture_middleware.models import Note, Error
-
-
-class NoteInline(admin.TabularInline):
-    """
-    Note inline class.
-    """
-    model = Note
+from error_capture_middleware.models import Error
 
 
 class ErrorAdmin(admin.ModelAdmin):
@@ -45,9 +38,7 @@ class ErrorAdmin(admin.ModelAdmin):
     Admin binding for Error to include Notes.
     """
     list_display = ('id', 'traceback', 'resolved', 'timestamp')
-    inlines = [NoteInline]
 
 
 # Register admin
-admin.site.register(Note)
 admin.site.register(Error, ErrorAdmin)

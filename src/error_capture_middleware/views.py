@@ -28,3 +28,75 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+Views for the SimpleTicketHandler
+"""
+
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import User
+from django.core.serializers import serialize
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import mark_safe
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+from error_capture_middleware.models import Error
+
+
+@permission_required('error.view_error')
+def list(request):
+    """
+    Lists all tickets.
+    """
+    errors = Error.objects.all()
+    return render_to_response(
+        'error_capture_middleware/simpleticket/list.html', locals())
+
+
+@permission_required('error.view_error')
+def user_list(request, name):
+    """
+    Lists all *my* tickets.
+    """
+    errors = Error.objects.filter(owner=get_object_or_404(User, username=name))
+    return render_to_response(
+        'error_capture_middleware/simpleticket/list.html', locals())
+
+
+@permission_required('error.view_error')
+def ticket(request, id):
+    """
+    Shows a specific ticket.
+    """
+    error = get_object_or_404(Error, id=id)
+    return render_to_response(
+        'error_capture_middleware/simpleticket/ticket.html', locals())
+
+
+@permission_required('error.change_error')
+@permission_required('error.view_error')
+def take_ticket(request, id):
+    """
+    Takes ownership of a specific ticket.
+    """
+    error = get_object_or_404(Error, id=id)
+    error.owner = request.user
+    error.save()
+    return HttpResponse(serialize('json', [error]), mimetype="text/json")
+
+
+@permission_required('error.change_error')
+@permission_required('error.view_error')
+def resolve_ticket(request, id):
+    """
+    Resolves or unresolves a specific ticket.
+    """
+    error = get_object_or_404(Error, id=id)
+    if error.resolved:
+        error.resolved = False
+    else:
+        error.resolved = True
+    error.save()
+    return HttpResponse(serialize('json', [error]), mimetype="text/json")
