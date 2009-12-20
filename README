@@ -11,17 +11,24 @@ Special Instructions
 --------------------
 Some handlers need more non-standard libraries.
 
-SimpleTicket
-------------
 
- * JQuery 1.3.2+
- * Pygments (Optional)
+Bugzilla
+--------
+
+ * python-bugzilla (https://fedorahosted.org/python-bugzilla/)
 
 
 Google Code
 -----------
 
  * gdata (http://code.google.com/p/gdata-python-client/downloads/list)
+
+
+SimpleTicket
+------------
+
+ * JQuery 1.3.2+
+ * Pygments (Optional)
 
 
 Required Settings
@@ -64,6 +71,27 @@ Templates
 ````````
  * subject.txt - Template for the subject. This file should not contain new line characters
  * body.txt - Template for the body of the email.
+
+
+Bugzilla
+--------
+Posts tracebacks to a Bugzilla instance with XMLRPC.
+
+*Package*: error_capture_middleware.handlers.bz.BugzillaHandler
+
+Settings
+````````
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE: Url to the Bugzilla XMLRPC service
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_USERNAME: Username to log in with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_PASSWORD: Password to authenticate withj
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_PRODUCT: Product to associate with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_COMPONENT: Component to associate with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_VERSION: Version to associate with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_PLATFORM: Platform to associate with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_SEVERITY: Severity of the bug
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_OS: Operating System to associate with
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_LOC: ... not sure (leave '')
+ * ERROR_CAPTURE_GOOGLE_BUGZILLA_PRIORITY: Priority of the bug
 
 
 GitHub
