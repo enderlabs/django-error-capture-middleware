@@ -44,7 +44,7 @@ from error_capture_middleware import (ErrorCaptureMiddleware,
     ErrorCaptureHandler, threading, thread_cls, Queue, queue_mod)
 
 from error_capture_middleware.handlers import (
-    email, github, simple_ticket, google_code)
+    bz, email, github, simple_ticket, google_code)
 
 
 class Jelly(object):
@@ -295,3 +295,30 @@ class GoogleCodeHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
         settings.ERROR_CAPTURE_GOOGLE_CODE_PASSWORD = ''
         settings.ERROR_CAPTURE_GOOGLE_CODE_TYPE = ''
         super(GoogleCodeHandlerTestCase, self).setUp()
+
+
+class BugzillaHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
+    """
+    Tests for Google Code handler.
+
+    TODO: flesh this test out more.
+    """
+
+    test_cls = bz.BugzillaHandler
+
+    def setUp(self):
+        """
+        Adds required temporary setting for the test.
+        """
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_USERNAME = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PASSWORD = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PRODUCT = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_COMPONENT = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_VERSION = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PLATFORM = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SEVERITY = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_OS = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_LOC = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PRIORITY = ''
+        super(BugzillaHandlerTestCase, self).setUp()
