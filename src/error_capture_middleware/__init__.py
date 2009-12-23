@@ -32,6 +32,9 @@
 Error caprture middleware and default application.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 try:
     from hashlib import sha1
 except ImportError, e:

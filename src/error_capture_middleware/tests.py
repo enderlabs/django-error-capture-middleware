@@ -32,6 +32,9 @@
 Unittests.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 import time
 import sys
 import traceback

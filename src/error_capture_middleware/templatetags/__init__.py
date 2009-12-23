@@ -31,3 +31,5 @@
 """
 Template tags.
 """
+
+__docformat__ = 'restructuredtext'

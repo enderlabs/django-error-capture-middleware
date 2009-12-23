@@ -32,13 +32,15 @@
 Tags.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 from django.template import Library, Node, resolve_variable
 from django.template import mark_safe
 
 register = Library()
 
-# Fail down to <pre> tags if we can't use pyugments.
-
+# Try to import and use pygments ...
 try:
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name
@@ -60,6 +62,7 @@ try:
                     style, encoding='UTF-8'), HtmlFormatter())
             return mark_safe(result)
 
+# Fail down to <pre> tags if we can't use pyugments.
 except ImportError:
 
     class StylizeNode(Node):
@@ -76,6 +79,13 @@ except ImportError:
 
 
 def stylize(parser, token):
+    """
+    Actual tag function.
+
+    :Parameters:
+       - parser: parser to use
+       - token: token to map to the variable list
+    """
     nodelist = parser.parse(('endstylize',))
     parser.delete_first_token()
     return StylizeNode(nodelist, *token.contents.split()[1:])

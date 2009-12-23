@@ -31,3 +31,5 @@
 """
 Handlers.
 """
+
+__docformat__ = 'restructuredtext'

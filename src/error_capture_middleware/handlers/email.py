@@ -32,6 +32,9 @@
 Super simple ticket handler that uses the admin interface.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template import loader

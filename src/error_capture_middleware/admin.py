@@ -28,6 +28,12 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+Bindings for models.
+"""
+
+__docformat__ = 'restructuredtext'
+
 
 from django.contrib import admin
 from error_capture_middleware.models import Error

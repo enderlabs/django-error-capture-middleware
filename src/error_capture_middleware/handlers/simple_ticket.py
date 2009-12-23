@@ -32,6 +32,9 @@
 Super simple ticket handler that uses the admin interface.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 from django.contrib.auth.models import User
 
 from error_capture_middleware import ErrorCaptureHandler

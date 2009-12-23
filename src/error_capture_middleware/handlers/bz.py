@@ -32,6 +32,9 @@
 Super simple ticket handler that uses the admin interface.
 """
 
+__docformat__ = 'restructuredtext'
+
+
 from bugzilla import Bugzilla
 
 from django.conf import settings
