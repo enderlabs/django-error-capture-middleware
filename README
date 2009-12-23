@@ -48,6 +48,21 @@ Required Settings
    handlers when DEBUG=True
 
 
+Optional Settings
+=================
+If you do not use these settings it is recommended to not define them at all in
+your settings. By defininf them empty, you may get a slight performance drop
+due to importing of libraries (for instance, ERROR_CAPTURE_TRACE_CLASS_BLACKLIST
+will import the regular expression library.
+
+ * ERROR_CAPTURE_TRACE_CONTENT_BLACKLIST: Strings which can be compiled into regular
+   expressions can be put in this tuple. If the content of a traceback matches, this
+   exception will be passed directly back to django for normal processing.
+ * ERROR_CAPTURE_TRACE_CLASS_BLACKLIST: Actual classes to black list (not strings). For
+   instance you may import the exceptions library and place exceptions.TypeError in
+   this tuple to pass all type errors back to django for normal processing.
+
+
 Handlers
 ========
 

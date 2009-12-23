@@ -90,16 +90,39 @@ class ErrorCaptureMiddleware(object):
            - `request`: request that caused the exception
            - `exception`: actual exception being raised
         """
+
+        # If this is a 404 ...
         if isinstance(exception, http.Http404):
             raise exception
 
+        # Snag the trace content since we will use it from here forward
+        trace_content = self.traceback.format_exc()
+
+        # If the type is blacklisted ...
+        if getattr(settings, 'ERROR_CAPTURE_TRACE_CLASS_BLACKLIST', None):
+            for ex in settings.ERROR_CAPTURE_TRACE_CLASS_BLACKLIST:
+                if ex == type(exception):
+                    raise exception
+        # If we match the traceback content in a regular expression ...
+        # Note that we import re in this scope so we only import if used
+        elif getattr(settings, 'ERROR_CAPTURE_TRACE_CONTENT_BLACKLIST', None):
+            import re
+            for rx in settings.ERROR_CAPTURE_TRACE_CONTENT_BLACKLIST:
+                try:
+                    re.search(rx, trace_content).groups()
+                    raise exception
+                except AttributeError:
+                    # didn't match
+                    pass
+
+        # If we get to this point, we will be processing the exception.
         exc_info = sys.exc_info()
         if settings.DEBUG and settings.ERROR_CAPTURE_NOOP_ON_DEBUG:
             return debug.technical_500_response(request, *exc_info)
 
         # generate a hash for this exception
         hash = sha1()
-        hash.update(self.traceback.format_exc())
+        hash.update(trace_content)
         exc_hash = hash.hexdigest()
 
         # check the cache to see if we have already handled it

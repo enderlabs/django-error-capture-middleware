@@ -77,6 +77,15 @@ ERROR_CAPTURE_HANDLERS = (
 #    'error_capture_middleware.handlers.bz.BugzillaHandler',
 )
 
+
+# regular expressions to block
+#ERROR_CAPTURE_TRACE_CONTENT_BLACKLIST = (
+#)
+
+# (ACTUAL) classes to blacklist
+#ERROR_CAPTURE_TRACE_CLASS_BLACKLIST = (
+#)
+
 ERROR_CAPTURE_GITHUB_REPO = ''
 ERROR_CAPTURE_GITHUB_TOKEN = ''
 ERROR_CAPTURE_GITHUB_LOGIN = ''
