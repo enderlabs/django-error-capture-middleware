@@ -7,3 +7,4 @@ syntax: glob
 *.db
 *.patch
 *.egg-info
+build/*
