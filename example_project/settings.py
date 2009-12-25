@@ -64,8 +64,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+import os.path
 TEMPLATE_DIRS = (
-    './templates/',
+    os.path.sep.join(__file__.split(os.path.sep)[:-1] + ['templates']),
 )
 
 ERROR_CAPTURE_ENABLE_MULTPROCESS = True
