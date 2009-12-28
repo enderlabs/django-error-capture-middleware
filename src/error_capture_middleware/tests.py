@@ -1,4 +1,4 @@
-# Copyright (c) 2009, Steve 'Ashcrow' Milner
+# Copyright (c) 2009-2010, Steve 'Ashcrow' Milner
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
