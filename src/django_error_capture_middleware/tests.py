@@ -43,10 +43,10 @@ from django.conf import settings
 from django.test import TestCase, client
 from django.test.client import Client
 
-from error_capture_middleware import (ErrorCaptureMiddleware,
+from django_error_capture_middleware import (ErrorCaptureMiddleware,
     ErrorCaptureHandler, threading, thread_cls, Queue, queue_mod)
 
-from error_capture_middleware.handlers import (
+from django_error_capture_middleware.handlers import (
     bz, email, github, simple_ticket, google_code)
 
 

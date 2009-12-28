@@ -70,7 +70,7 @@ Email
 -----
 Sends an email to the admins on traceback.
 
-*Package*: error_capture_middleware.handlers.email.EmailHandler
+*Package*: django_error_capture_middleware.handlers.email.EmailHandler
 
 Settings
 ````````
@@ -97,7 +97,7 @@ Bugzilla
 --------
 Posts tracebacks to a Bugzilla instance with XMLRPC.
 
-*Package*: error_capture_middleware.handlers.bz.BugzillaHandler
+*Package*: django_error_capture_middleware.handlers.bz.BugzillaHandler
 
 Settings
 ````````
@@ -118,7 +118,7 @@ GitHub
 ------
 Posts tracebacks to the GitHub issues system.
 
-*Package*: error_capture_middleware.handlers.github.GitHubHandler
+*Package*: django_error_capture_middleware.handlers.github.GitHubHandler
 
 Settings
 ````````
@@ -138,7 +138,7 @@ Google Code
 -----------
 Posts tracebacks to the Google Code issues systems.
 
-*Package*: error_capture_middleware.handlers.google_code.GoogleCodeHandler
+*Package*: django_error_capture_middleware.handlers.google_code.GoogleCodeHandler
 
 Settings
 ````````
@@ -157,7 +157,7 @@ SimpleTicket
 ============
 Really simple ticket system for tracebacks. Mainly created as a demo.
 
-*Package*: error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler
+*Package*: django_error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler
 
 Settings
 ````````

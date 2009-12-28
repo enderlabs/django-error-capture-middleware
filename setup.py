@@ -20,10 +20,10 @@ Standard build script.
 
 __docformat__ = 'restructuredtext'
 
-import os
+import os.path
 import sys
 
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages, findall, Command
 
 sys.path.insert(0, 'src')
 
@@ -46,7 +46,7 @@ class TestCommand(Command):
 
 
 setup(
-    name="error_capture_middleware",
+    name="django_error_capture_middleware",
     version='0.0.1',
     description="sends tracebacks in Django to bugtrackers or services",
     long_description=("Middleware for the Django framework that allows you "
@@ -62,8 +62,14 @@ setup(
     license="New BSD",
 
     packages=find_packages('src'),
-
     package_dir={'': 'src'},
+    include_package_data=True,
+    # Add in all the template data using a bit of map/finall magic
+    package_data = {
+        'django_error_capture_middleware': map(lambda s: s[36:],
+            findall(os.path.sep.join(
+                ['src', 'django_error_capture_middleware', 'templates']))),
+    },
 
     classifiers=[
         'License :: OSI Approved :: BSD License',

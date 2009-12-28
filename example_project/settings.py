@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -59,7 +59,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'error_capture_middleware.ErrorCaptureMiddleware',
+    'django_error_capture_middleware.ErrorCaptureMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -71,11 +71,11 @@ TEMPLATE_DIRS = (
 
 ERROR_CAPTURE_ENABLE_MULTPROCESS = True
 ERROR_CAPTURE_HANDLERS = (
-#    'error_capture_middleware.handlers.github.GitHubHandler',
-#    'error_capture_middleware.handlers.email.EmailHandler',
-    'error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler',
-#    'error_capture_middleware.handlers.google_code.GoogleCodeHandler',
-#    'error_capture_middleware.handlers.bz.BugzillaHandler',
+#    'django_error_capture_middleware.handlers.github.GitHubHandler',
+#    'django_error_capture_middleware.handlers.email.EmailHandler',
+    'django_error_capture_middleware.handlers.simple_ticket.SimpleTicketHandler',
+#    'django_error_capture_middleware.handlers.google_code.GoogleCodeHandler',
+#    'django_error_capture_middleware.handlers.bz.BugzillaHandler',
 )
 
 
@@ -124,5 +124,5 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'error_capture_middleware',
+    'django_error_capture_middleware',
 )

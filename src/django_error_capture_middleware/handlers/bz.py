@@ -35,24 +35,31 @@ Super simple ticket handler that uses the admin interface.
 __docformat__ = 'restructuredtext'
 
 
-import gdata.projecthosting.client
+from bugzilla import Bugzilla
 
 from django.conf import settings
 from django.template import loader
 
-from error_capture_middleware import ErrorCaptureHandler
+from django_error_capture_middleware import ErrorCaptureHandler
 
 
-class GoogleCodeHandler(ErrorCaptureHandler):
+class BugzillaHandler(ErrorCaptureHandler):
     """
-    Google Code handler.
+    Bugzilla handler.
     """
 
     required_settings = [
-        'ERROR_CAPTURE_GOOGLE_CODE_PROJECT',
-        'ERROR_CAPTURE_GOOGLE_CODE_PASSWORD',
-        'ERROR_CAPTURE_GOOGLE_CODE_LOGIN',
-        'ERROR_CAPTURE_GOOGLE_CODE_TYPE',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_USERNAME',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_PASSWORD',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_PRODUCT',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_COMPONENT',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_VERSION',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_PLATFORM',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_SEVERITY',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_OS',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_LOC',
+        'ERROR_CAPTURE_GOOGLE_BUGZILLA_PRIORITY',
     ]
 
     def handle(self, request, exception, tb):
@@ -67,36 +74,30 @@ class GoogleCodeHandler(ErrorCaptureHandler):
 
         def get_data(queue):
             # Create a client and login
-            client = gdata.projecthosting.client.ProjectHostingClient()
-            client.client_login(
-                settings.ERROR_CAPTURE_GOOGLE_CODE_LOGIN,
-                settings.ERROR_CAPTURE_GOOGLE_CODE_PASSWORD,
-                source='error-capture-middleware',
-                service='code',
-            )
+            bz = Bugzilla(
+                url=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE)
+            bz.login(settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_USERNAME,
+                settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PASSWORD)
             # Setup the templates
             title_tpl = loader.get_template(
-                'error_capture_middleware/googlecode/title.txt')
+                'django_error_capture_middleware/bugzilla/title.txt')
             body_tpl = loader.get_template(
-                'error_capture_middleware/googlecode/body.txt')
+                'django_error_capture_middleware/bugzilla/body.txt')
             # Add the issue
-            result = client.add_issue(
-                settings.ERROR_CAPTURE_GOOGLE_CODE_PROJECT,
-                title_tpl.render(self.context),
-                body_tpl.render(self.context),
-                settings.ERROR_CAPTURE_GOOGLE_CODE_LOGIN, 'open',
-                labels=[settings.ERROR_CAPTURE_GOOGLE_CODE_TYPE])
+            bug = bz.createbug(
+                product=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PRODUCT,
+                component=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_COMPONENT,
+                version=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_VERSION,
+                short_desc=str(title_tpl.render(self.context)),
+                comment=str(body_tpl.render(self.context)),
+                rep_platform=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PLATFORM,
+                bug_severity=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SEVERITY,
+                op_sys=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_OS,
+                bug_file_loc=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_LOC,
+                priority=settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PRIORITY)
             # pull the data we want out and throw it in the queue
-            issue_url = result.find_html_link()
-            id = issue_url.rpartition('=')[-1]
-            queue.put_nowait([id, issue_url])
+            queue.put_nowait(bug.bug_id)
 
         # Execute the background call.
         queue, process = self.background_call(get_data)
-        try:
-            # Get the results
-            self.context['id'], self.context['bug_url'] = self.get_data(queue)
-        except TypeError:
-            # If we get None we can't split ... sadly it seems that
-            # it's very rare to get a fast enough response back.
-            pass
+        self.context['id'] = self.get_data(queue)

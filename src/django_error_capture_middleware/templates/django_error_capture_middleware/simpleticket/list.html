@@ -1,11 +1,11 @@
-{% extends "error_capture_middleware/simpleticket/base.html" %}
+{% extends "django_error_capture_middleware/simpleticket/base.html" %}
 
 {% load stylize %}
 
 {% block scripts %}
 <script src="/simple/media/js/jquery-1.3.2.min.js"></script>
 <script>
-    {% include "error_capture_middleware/simpleticket/ajax.js" %}
+    {% include "django_error_capture_middleware/simpleticket/ajax.js" %}
 </script>
 {% endblock %}
 
@@ -47,16 +47,16 @@
                     <a href="../ticket/{{ error.id }}">{{ error.id }}</a>
                 </td>
                 <td class="error">
-                    {% include "error_capture_middleware/simpleticket/snippets/timestamp.txt" %}
+                    {% include "django_error_capture_middleware/simpleticket/snippets/timestamp.txt" %}
                 </td>
                 <td class="error">
-                    {% include "error_capture_middleware/simpleticket/snippets/owner.txt" %}
+                    {% include "django_error_capture_middleware/simpleticket/snippets/owner.txt" %}
                 </td>
                 <td class="error">
-                    {% include "error_capture_middleware/simpleticket/snippets/user.txt" %}
+                    {% include "django_error_capture_middleware/simpleticket/snippets/user.txt" %}
                 </td>
                 <td id="resolved" class="error">
-                    {% include "error_capture_middleware/simpleticket/snippets/resolved.txt" %}
+                    {% include "django_error_capture_middleware/simpleticket/snippets/resolved.txt" %}
                 </td>
                 <td class="error">
                     <a href="#" id="more">Show Trace</a>
@@ -65,7 +65,7 @@
             </tr>
             <tr id="trace" style="display: none">
                 <td colspan="5">
-                    {% include "error_capture_middleware/simpleticket/snippets/traceback.txt" %}
+                    {% include "django_error_capture_middleware/simpleticket/snippets/traceback.txt" %}
                     <p><a href="../ticket/{{ error.id }}">View Ticket</a></p>
                 </td>
             </tr>

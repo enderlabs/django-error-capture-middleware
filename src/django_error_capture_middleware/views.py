@@ -45,7 +45,7 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
-from error_capture_middleware.models import Error
+from django_error_capture_middleware.models import Error
 
 
 @permission_required('error.view_error')
@@ -55,7 +55,7 @@ def list(request):
     """
     errors = Error.objects.all()
     return render_to_response(
-        'error_capture_middleware/simpleticket/list.html', locals())
+        'django_error_capture_middleware/simpleticket/list.html', locals())
 
 
 @permission_required('error.view_error')
@@ -65,7 +65,7 @@ def user_list(request, name):
     """
     errors = Error.objects.filter(owner=get_object_or_404(User, username=name))
     return render_to_response(
-        'error_capture_middleware/simpleticket/list.html', locals())
+        'django_error_capture_middleware/simpleticket/list.html', locals())
 
 
 @permission_required('error.view_error')
@@ -75,7 +75,7 @@ def ticket(request, id):
     """
     error = get_object_or_404(Error, id=id)
     return render_to_response(
-        'error_capture_middleware/simpleticket/ticket.html', locals())
+        'django_error_capture_middleware/simpleticket/ticket.html', locals())
 
 
 @permission_required('error.change_error')

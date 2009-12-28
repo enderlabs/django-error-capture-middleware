@@ -39,7 +39,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template import loader
 
-from error_capture_middleware import ErrorCaptureHandler
+from django_error_capture_middleware import ErrorCaptureHandler
 
 
 class EmailHandler(ErrorCaptureHandler):
@@ -62,9 +62,9 @@ class EmailHandler(ErrorCaptureHandler):
 
         def get_data(context, queue):
             subject_tpl = loader.get_template(
-                'error_capture_middleware/email/subject.txt')
+                'django_error_capture_middleware/email/subject.txt')
             body_tpl = loader.get_template(
-                'error_capture_middleware/email/body.txt')
+                'django_error_capture_middleware/email/body.txt')
             # The render function appends a \n character at the end. Subjects
             # can't have newlines.
             subject = subject_tpl.render(context).replace('\n', '')

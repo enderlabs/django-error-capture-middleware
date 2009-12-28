@@ -44,7 +44,7 @@ urlpatterns = patterns('')
 # Only turn on the simpleticket urls if it's in the handlers
 if 'SimpleTicketHandler' in [x.rpartition(
     '.')[-1] for x in settings.ERROR_CAPTURE_HANDLERS]:
-    urlpatterns += patterns('error_capture_middleware.views',
+    urlpatterns += patterns('django_error_capture_middleware.views',
         (r'(?P<name>\w+)/list/$', 'user_list'),
         (r'list/$', 'list'),
         (r'ticket/(?P<id>\d+)/take/$', 'take_ticket'),

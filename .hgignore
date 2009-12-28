@@ -8,3 +8,4 @@ syntax: glob
 *.patch
 *.egg-info
 build/*
+dist/*

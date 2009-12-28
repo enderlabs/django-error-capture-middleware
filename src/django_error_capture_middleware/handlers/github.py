@@ -35,29 +35,60 @@ Super simple ticket handler that uses the admin interface.
 __docformat__ = 'restructuredtext'
 
 
-from django.contrib.auth.models import User
+import yaml
+import urllib
 
-from error_capture_middleware import ErrorCaptureHandler
-from error_capture_middleware.models import Error
+from django.conf import settings
+from django.template import loader
+
+from django_error_capture_middleware import ErrorCaptureHandler
 
 
-class SimpleTicketHandler(ErrorCaptureHandler):
+# TODO maybe we can add some nice methods to help take care of some what
+# will be used in other backends ... need to find out what they will be
+
+
+class GitHubHandler(ErrorCaptureHandler):
     """
-    Default handler of errors.
+    GitHub handler.
     """
+
+    required_settings = ['ERROR_CAPTURE_GITHUB_REPO',
+        'ERROR_CAPTURE_GITHUB_TOKEN', 'ERROR_CAPTURE_GITHUB_LOGIN']
 
     def handle(self, request, exception, tb):
         """
-        Pushes the traceback into a simple ticket system.
+        Pushes the traceback to a github ticket system.
 
         :Parameters:
            - `request`: request causing the exception
            - `exception`: actual exception raised
            - `tb`: traceback string
         """
-        user = None
-        if isinstance(request.user, User):
-            user = request.user
-        error = Error(user=user, traceback="\n".join(tb))
-        error.save()
-        self.context['id'] = error.id
+        url = ("http://github.com/api/v2/yaml/issues/open/" +
+            settings.ERROR_CAPTURE_GITHUB_REPO)
+        issue_url = ('http://github.com/' +
+            settings.ERROR_CAPTURE_GITHUB_REPO + '/issues#issue/')
+        # Make the data nice for github
+        title_tpl = loader.get_template(
+            'django_error_capture_middleware/github/title.txt')
+        body_tpl = loader.get_template(
+            'django_error_capture_middleware/github/body.txt')
+        params = {
+            'login': settings.ERROR_CAPTURE_GITHUB_LOGIN,
+            'token': settings.ERROR_CAPTURE_GITHUB_TOKEN,
+            'title': title_tpl.render(self.context),
+            'body': body_tpl.render(self.context),
+        }
+        # Worker function
+
+        def get_data(queue):
+            result = urllib.urlopen(url, urllib.urlencode(params)).read()
+            # Remove !timestamp, it isn't valid YAML
+            id = yaml.load(
+                result.replace('!timestamp', ''))['issue']['number']
+            queue.put_nowait(id)
+        queue, process = self.background_call(get_data)
+        id = self.get_data(queue)
+        self.context['bug_url'] = issue_url + str(id)
+        self.context['id'] = id
