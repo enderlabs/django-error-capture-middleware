@@ -40,18 +40,37 @@ from django.template import mark_safe
 
 register = Library()
 
+
+class _StylizeNodeParent(Node):
+    """
+    Parent Stylize node class.
+    """
+
+    def __init__(self, nodelist, *varlist):
+        """
+        Creates an instance of a stylize node.
+        """
+        self.nodelist, self.vlist = (nodelist, varlist)
+
+
 # Try to import and use pygments ...
 try:
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name
     from pygments.formatters import HtmlFormatter
 
-    class StylizeNode(Node):
-
-        def __init__(self, nodelist, *varlist):
-            self.nodelist, self.vlist = (nodelist, varlist)
+    class StylizeNode(_StylizeNodeParent):
+        """
+        Pygments tag renderer.
+        """
 
         def render(self, context):
+            """
+            Creates a renderable safe string for the tag.
+
+            :Parameters:
+               - `context`: current context information
+            """
             style = 'text'
             if len(self.vlist) > 0:
                 style = resolve_variable(self.vlist[0], context)
@@ -65,12 +84,18 @@ try:
 # Fail down to <pre> tags if we can't use pyugments.
 except ImportError:
 
-    class StylizeNode(Node):
-
-        def __init__(self, nodelist, *varlist):
-            self.nodelist, self.vlist = (nodelist, varlist)
+    class StylizeNode(_StylizeNodeParent):
+        """
+        Pre tag renderer.
+        """
 
         def render(self, context):
+            """
+            Creates a renderable safe string for the tag.
+
+            :Parameters:
+               - `context`: current context information
+            """
             style = 'text'
             if len(self.vlist) > 0:
                 style = resolve_variable(self.vlist[0], context)
@@ -83,7 +108,7 @@ def stylize(parser, token):
     Actual tag function.
 
     :Parameters:
-       - parser: parser to use
+       - parser: template parser
        - token: token to map to the variable list
     """
     nodelist = parser.parse(('endstylize',))
