@@ -313,7 +313,7 @@ class BugzillaHandlerTestCase(_ParentTicketHandlerMixIn, TestCasePlus):
         """
         Adds required temporary setting for the test.
         """
-        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE = ''
+        settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_SERVICE = 'http://example.com/'
         settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_USERNAME = ''
         settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PASSWORD = ''
         settings.ERROR_CAPTURE_GOOGLE_BUGZILLA_PRODUCT = ''

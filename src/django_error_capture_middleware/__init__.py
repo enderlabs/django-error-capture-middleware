@@ -61,7 +61,7 @@ if platform.python_version() >= '2.6.0':
 else:
     threading = __import__('threading')
     thread_cls = threading.Thread
-    queue_mod = __import__('queue')
+    queue_mod = __import__('Queue')
 
 
 def exception_wrapper(func):
