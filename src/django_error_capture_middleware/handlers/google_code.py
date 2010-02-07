@@ -88,7 +88,7 @@ class GoogleCodeHandler(ErrorCaptureHandler):
                 labels=[settings.ERROR_CAPTURE_GOOGLE_CODE_TYPE])
             # pull the data we want out and throw it in the queue
             issue_url = result.find_html_link()
-            id = issue_url.rpartition('=')[-1]
+            id = issue_url.split('=')[-1]
             queue.put_nowait([id, issue_url])
 
         # Execute the background call.
