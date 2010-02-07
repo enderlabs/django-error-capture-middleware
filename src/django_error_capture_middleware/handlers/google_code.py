@@ -35,8 +35,6 @@ Super simple ticket handler that uses the admin interface.
 __docformat__ = 'restructuredtext'
 
 
-import gdata.projecthosting.client
-
 from django.conf import settings
 from django.template import loader
 
@@ -47,6 +45,8 @@ class GoogleCodeHandler(ErrorCaptureHandler):
     """
     Google Code handler.
     """
+
+    import gdata.projecthosting.client
 
     required_settings = [
         'ERROR_CAPTURE_GOOGLE_CODE_PROJECT',
@@ -67,7 +67,7 @@ class GoogleCodeHandler(ErrorCaptureHandler):
 
         def get_data(queue):
             # Create a client and login
-            client = gdata.projecthosting.client.ProjectHostingClient()
+            client = self.gdata.projecthosting.client.ProjectHostingClient()
             client.client_login(
                 settings.ERROR_CAPTURE_GOOGLE_CODE_LOGIN,
                 settings.ERROR_CAPTURE_GOOGLE_CODE_PASSWORD,

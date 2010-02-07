@@ -9,3 +9,4 @@ syntax: glob
 *.egg-info
 build/*
 dist/*
+.coverage
