@@ -38,15 +38,17 @@ __docformat__ = 'restructuredtext'
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.conf import settings
+
 
 class Error(models.Model):
     """
     An error.
     """
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     resolved = models.BooleanField(default=False)
     owner = models.ForeignKey(
-        User, null=True, blank=True, related_name='owner')
+        settings.AUTH_USER_MODEL, null=True, blank=True, related_name='owner')
     traceback = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
