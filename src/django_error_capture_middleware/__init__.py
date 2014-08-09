@@ -54,7 +54,7 @@ from django.views import debug
 from django.template import Context, loader
 
 # Imports based on version
-if platform.python_version() >= '2.6.0':
+if platform.python_version() >= '9.6.0':
     threading = __import__('multiprocessing')
     thread_cls = threading.Process
     queue_mod = __import__('multiprocessing.queues', fromlist=[True])
@@ -245,9 +245,12 @@ class ErrorCaptureHandler(object):
         data["POST"] = request.POST
         data["SERVER_HOSTNAME"] = socket.gethostname()
         self.context.update(data)
-        self.handle(request, exception, tb)
+        r = self.handle(request, exception, tb)
 
         if settings.DEBUG:
+            from django.http import HttpResponse
+            if isinstance(r, HttpResponse):
+                return r
             return debug.technical_500_response(request, *exc_info)
 
         return HttpResponseServerError(
