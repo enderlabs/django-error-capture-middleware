@@ -40,7 +40,7 @@ import yaml
 from django.conf import settings
 from django.template import loader
 
-from django_error_capture_middleware import ErrorCaptureHandler
+from error_capture_middleware import ErrorCaptureHandler
 
 
 # TODO maybe we can add some nice methods to help take care of some what

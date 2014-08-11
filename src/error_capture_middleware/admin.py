@@ -36,7 +36,7 @@ __docformat__ = 'restructuredtext'
 
 
 from django.contrib import admin
-from django_error_capture_middleware.models import Error
+from error_capture_middleware.models import Error
 
 
 class ErrorAdmin(admin.ModelAdmin):

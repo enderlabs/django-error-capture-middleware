@@ -38,7 +38,7 @@ __docformat__ = 'restructuredtext'
 from django.conf import settings
 from django.template import loader
 
-from django_error_capture_middleware import ErrorCaptureHandler
+from error_capture_middleware import ErrorCaptureHandler
 
 
 class EmailHandler(ErrorCaptureHandler):

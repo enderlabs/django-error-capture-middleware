@@ -52,7 +52,7 @@ from django.test.client import Client
 
 from minimock import Mock
 
-from django_error_capture_middleware import (ErrorCaptureMiddleware,
+from error_capture_middleware import (ErrorCaptureMiddleware,
     ErrorCaptureHandler, threading, thread_cls, Queue, queue_mod)
 
 from django_error_capture_middleware.handlers import (

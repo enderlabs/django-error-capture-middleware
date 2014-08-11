@@ -37,8 +37,8 @@ __docformat__ = 'restructuredtext'
 
 from django.contrib.auth.models import User
 
-from django_error_capture_middleware import ErrorCaptureHandler
-from django_error_capture_middleware.models import Error
+from error_capture_middleware import ErrorCaptureHandler
+from error_capture_middleware.models import Error
 
 
 class SimpleTicketHandler(ErrorCaptureHandler):

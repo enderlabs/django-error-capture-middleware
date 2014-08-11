@@ -45,7 +45,7 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
-from django_error_capture_middleware.models import Error
+from error_capture_middleware.models import Error
 
 
 @permission_required('error.view_error')
